@@ -1,6 +1,6 @@
 
-
 Discorder.exe
-/release
 *.zip
-/v1.0.2-Discorder
+/v*.*.*-Discorder
+/bin/HandBrakeCLI-1.9.2-win-x86_64
+/bin/ffmpeg
