@@ -1,1 +1,1 @@
-C:/Program Files/HandBrake/HandBrakeCLI.exe
+/bin/HandBrakeCLI-1.9.2-win-x86_64/HandBrakeCLI.exe

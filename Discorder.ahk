@@ -28,7 +28,7 @@ if(ih.EndKey != "Space" and ih.EndKey != "Enter"){
 Gui_DropFiles(GuiObj, GuiCtrlObj, FileArray, X, Y) {
 	guiData := MyGui.Submit()
 	ih.Stop()
-	ffprobePath := A_WorkingDir "\path_ffprobe.md"
+	ffprobePath := A_WorkingDir "/bin/path_ffprobe.md"
 	Loop Read, ffprobePath
 	{
 		ffprobe := a_LoopReadLine
@@ -76,20 +76,20 @@ Gui_DropFiles(GuiObj, GuiCtrlObj, FileArray, X, Y) {
 
 ReEncode(inputPath, bitrate) {
 	try{
-		handbrakePath := A_WorkingDir "\path_HandBrakeCLI.md"
+		handbrakePath := A_WorkingDir "/bin/path_HandBrakeCLI.md"
 		Loop Read, handbrakePath
 		{
 			cliPath := a_LoopReadLine
 			break
 		}
-		presetPath := A_WorkingDir "\preset.json"
+		presetPath := A_WorkingDir "/bin/preset.json"
 
 		strArray := StrSplit(inputPath,'.')
 		outputPath := strArray[1] "+." strArray[2]
 
-		cmd := Format('"{1}" -i "{2}" -o "{3}" --preset-import-file "{4}" -b {5}',cliPath, inputPath, outputPath, presetPath, bitrate)
+		cmd := Format('"{1}" -i "{2}" -o "{3}" --preset-import-file "{4}" -b {5}', cliPath, inputPath, outputPath, presetPath, bitrate)
 
-		consolePath := A_WorkingDir "\ReEncode.ps1"
+		consolePath := A_WorkingDir "/bin/encode.ps1"
 
 		file := FileOpen(consolePath, "w")
 		{
@@ -112,3 +112,6 @@ ReEncode(inputPath, bitrate) {
 		MsgBox(e.Message)
 	}
 }
+
+; todo: sanitize filenames
+; todo: add logging
