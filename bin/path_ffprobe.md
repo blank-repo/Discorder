@@ -1,1 +1,1 @@
-./bin/ffmpeg/bin/ffprobe.exe
+./bin/win/ffmpeg/bin/ffprobe.exe
