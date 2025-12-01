@@ -38,15 +38,21 @@ Gui_DropFiles(GuiObj, GuiCtrlObj, FileArray, X, Y) {
 	for i, DroppedFilePath in FileArray
 		try
 		{
+			
 			cmd := Format( '"{1}" -i "{2}" -show_entries format=duration -v quiet -of csv="p=0"', ffprobe, DroppedFilePath )
-
 			shell := ComObject("WScript.Shell")
-
+			
 			fullCmd := A_ComSpec " /C "  "`"" cmd "`""
 			exec := shell.Exec(fullCmd)
 			cmdOutput := exec.StdOut.ReadAll()
 
-			desiredSize := 9.8 ; minus small buffer (0.2 mb) to further accomodate any potential inaccuracies
+			size := FileGetSize(DroppedFilePath, 'M')
+			if(size <= 9){
+				desiredSize := size
+				secNum := size
+			}else{
+				desiredSize := 9.8 ; minus small buffer (0.2 mb) to further accomodate any potential inaccuracies
+			}
 			powerOf2ByBits := 8192
 			withOverhead := 1.024
 
@@ -56,25 +62,27 @@ Gui_DropFiles(GuiObj, GuiCtrlObj, FileArray, X, Y) {
 			}else{
 				secNum:= cmdOutput
 			}
-			if isInteger(secNum)
+
+			if isInteger(secNum){
+
 				totalSeconds:= Integer(secNum)
-
+				
 				audioBitRate := 128
-
+				
 				result := (desiredSize * powerOf2ByBits) / (totalSeconds * withOverhead) - audioBitRate ;Calculate total bitrate → Subtract audio bitrate
-
+				
 				strArray := StrSplit(result,'.')
 				result := Integer(strArray[1])
-
-				ReEncode(DroppedFilePath, result)
-
+				
+				ReEncode(DroppedFilePath, result, size)
+			}
 		}
 		catch Error as e{
 			MsgBox(e.Message)
 		}
 }
 
-ReEncode(inputPath, bitrate) {
+ReEncode(inputPath, bitrate, size) {
 	try{
 		handbrakePath := A_WorkingDir "/bin/path_HandBrakeCLI.md"
 		Loop Read, handbrakePath
@@ -82,10 +90,15 @@ ReEncode(inputPath, bitrate) {
 			cliPath := a_LoopReadLine
 			break
 		}
-		presetPath := A_WorkingDir "/bin/preset.json"
+		if(size <= 9){
+			presetPath := A_WorkingDir "/bin/slowpreset.json"
+		}else{
+			presetPath := A_WorkingDir "/bin/preset.json"
+		}
 
 		strArray := StrSplit(inputPath,'.')
-		outputPath := strArray[1] "+." strArray[2]
+		outputPath := strArray[1] "+.mp4"
+		; outputPath := strArray[1] "+." strArray[2]
 
 		cmd := Format('"{1}" -i "{2}" -o "{3}" --preset-import-file "{4}" -b {5}', cliPath, inputPath, outputPath, presetPath, bitrate)
 
@@ -115,3 +128,7 @@ ReEncode(inputPath, bitrate) {
 
 ; todo: sanitize filenames
 ; todo: add logging
+; todo: detect audio bitrate
+; todo: allow size choice
+; todo: ignore files under sizechoice - overhead
+; todo: make bg transparent and move to one side
