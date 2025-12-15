@@ -9,11 +9,16 @@ MyGui := Gui(, "Discorder")
 MyGui.SetFont("s32")
 MyGui.Opt("+AlwaysOnTop +ToolWindow -SysMenu +Owner")  ; +Owner avoids a taskbar button.
 MyGui.MenuBar := ""
+w := A_ScreenWidth * 0.3
+h := A_ScreenHeight * 0.3
+x := A_ScreenWidth - w - 50
+y := A_ScreenHeight - h - 100
 
-guictrl := MyGui.Add("ListBox", "r10 x0 w600 vChoice", ["Drop Video Here"])
+guictrl := MyGui.Add("ListBox", "r6 x0 w600 vChoice", ["Drop Video Here"])
 MyGui.OnEvent("DropFiles", Gui_DropFiles , 1)
 
 MyGui.Show("NoActivate")  ; NoActivate avoids deactivating the currently active window.
+MyGui.Move(x, y, w, h)
 
 ih := InputHook("L1", "{Space}{Enter}")
 ih.Start()
@@ -51,7 +56,7 @@ Gui_DropFiles(GuiObj, GuiCtrlObj, FileArray, X, Y) {
 				desiredSize := size
 				secNum := size
 			}else{
-				desiredSize := 9.8 ; minus small buffer (0.2 mb) to further accomodate any potential inaccuracies
+				desiredSize := 10.0 - ((size/10) * 0.2) ; minus small buffer (0.2 mb) to further accomodate any potential inaccuracies
 			}
 			powerOf2ByBits := 8192
 			withOverhead := 1.024
@@ -131,4 +136,5 @@ ReEncode(inputPath, bitrate, size) {
 ; todo: detect audio bitrate
 ; todo: allow size choice
 ; todo: ignore files under sizechoice - overhead
-; todo: make bg transparent and move to one side
+; todo: make bg transparent ~~and move to one side~~
+; todo: allow forcing slowpreset for better results
